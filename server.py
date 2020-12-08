@@ -33,4 +33,18 @@ def recive():
     while  True:
         client, address = server.accept()
         print(f"Connectede with {str(address)}")
-        
+
+        client.send("Nick".encode("ASCII"))
+        nickname = client.recv(1024).encode("ascii")
+        nicknames.append(nickname)
+        clients.append(clients)
+
+        print(f"Nickname of the client is {nickname}!")
+        broadcast(f"{nickname} joined the chat !".encode("ascii"))
+        client.send("Conected to the server!".encode("ascii"))
+
+        thread = threading.Thread(target=handle, args=(client,))
+        thread.start()
+
+print("server is listening... ")
+recive()
