@@ -2,7 +2,7 @@ import threading
 import socket
 
 host = "127.0.0.1" #localhost
-port = 555555
+port = 65535
 
 server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.bind((host,port))
@@ -29,22 +29,26 @@ def handle(client):
             nicknames.remove(nickname)
             break
 
-def recive():
-    while  True:
+def receive():
+    while True:
+        # Accept Connection
         client, address = server.accept()
-        print(f"Connectede with {str(address)}")
+        print("Connected with {}".format(str(address)))
 
-        client.send("Nick".encode("ASCII"))
-        nickname = client.recv(1024).encode("ascii")
+        # Request And Store Nickname
+        client.send('NICK'.encode('ascii'))
+        nickname = client.recv(1024).decode('ascii')
         nicknames.append(nickname)
-        clients.append(clients)
+        clients.append(client)
 
-        print(f"Nickname of the client is {nickname}!")
-        broadcast(f"{nickname} joined the chat !".encode("ascii"))
-        client.send("Conected to the server!".encode("ascii"))
+        # Print And Broadcast Nickname
+        print("Nickname is {}".format(nickname))
+        broadcast("{} joined!".format(nickname).encode('ascii'))
+        client.send('Connected to server!'.encode('ascii'))
 
+        # Start Handling Thread For Client
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
 
 print("server is listening... ")
-recive()
+receive()
